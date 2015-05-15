@@ -1,0 +1,14 @@
+<html>
+<body>
+{% if g.message %}
+<div id="message" style="background-color: {% if g.success %}#0f0{% else %}#f00{% endif %}">
+    {{ g.message }}
+</div>
+{% endif %}
+<form id="input_form" action="" method="post">
+    <label for="input_question_id">Number: </label>
+    <input id="input_question_id" type="text" name="question_id" />
+    <input id="submit" type="submit" />
+</form>
+</body>
+</html>
