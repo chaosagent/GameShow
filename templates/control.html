@@ -1,14 +1,54 @@
 <html>
+<head>
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.input').keyup(function (event) {
+                if (event.keyCode == 13) {
+                    $(this).siblings('.button_submit').click();
+                }
+            });
+
+            function clear_message(message_box) {
+                message_box.html('');
+                message_box.css('background-color', '');
+            }
+
+            function show_message(message_box, message, color) {
+                message_box.html(message);
+                message_box.css('background-color', color);
+                setTimeout(function () {
+                    clear_message(message_box)
+                }, 1000);
+            }
+
+            $('.button_submit').click(function () {
+                var input = $(this).siblings('.input');
+                if (input.val() === '') {
+                    return;
+                }
+                $.post('{{ url_for('api_set_current_question') }}', {
+                    'question_id': input.val()
+                }, function (data) {
+                    input.val('');
+                    message_box = $('#message');
+                    if (data.success) {
+                        show_message(message_box, data.message, '#0f0');
+                    } else {
+                        show_message(message_box, data.message, '#f00');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
 <body>
-{% if g.message %}
-<div id="message" style="background-color: {% if g.success %}#0f0{% else %}#f00{% endif %}">
-    {{ g.message }}
+<div id="message">
 </div>
-{% endif %}
-<form id="input_form" action="" method="post">
-    <label for="input_question_id">Number: </label>
-    <input id="input_question_id" type="text" name="question_id" />
-    <input id="submit" type="submit" />
-</form>
+<div>
+    <label for="input_show_question_id">Number: </label>
+    <input id="input_show_question_id" class="input" type="text" name="question_id"/>
+    <button id="button_submit_show_question" class="button_submit" type="button">Submit</button>
+</div>
 </body>
 </html>
