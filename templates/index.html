@@ -90,9 +90,11 @@
         var current_question_info;
         function show_current_question() {
             $.get('{{ url_for('api_get_current_question') }}', function(data) {
+                if (!data['success']) return;
                 var question_info = data['data'];
                 current_question_info = question_info;
                 $('#question_text').text(question_info['statement']);
+                $('#question_choices').empty();
                 for (var i = 0; i < question_info['choices'].length; i++) {
                     $('#question_choices').append('<p class="answer_choice">' + String.fromCharCode(65 + i) + ') ' + question_info['choices'][i] + '</p>');
                 }
@@ -120,7 +122,7 @@
                     answer_refresh_loop(new_question);
                 }
             });
-            setTimeout(question_refresh_loop, 1000)
+            setTimeout(question_refresh_loop, 1000);
         }
 
         function answer_refresh_loop(question_id) {

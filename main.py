@@ -32,6 +32,7 @@ def api_set_current_question(data):
                 int(data['question_id']) >= len(app.questions):
         return tools.gen_result_failure('Invalid question ID.')
     else:
+        app.show_answer = False
         app.current_question = int(data['question_id'])
         return tools.gen_result_success(message='Success.')
 
@@ -42,6 +43,7 @@ def api_set_show_answer(data):
     app.show_answer = data['show'] == 'true'
     return tools.gen_result_success(message='Success.')
 
+# TODO: use standard success/failure + data api format
 @app.route('/api/current_question', methods=['GET', 'POST'])
 @tools.api_response
 def api_current_question():
