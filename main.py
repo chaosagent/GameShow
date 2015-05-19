@@ -35,16 +35,27 @@ def page_control():
 @tools.requires_args(required_args=['question_id'])
 def api_set_current_question(data):
     if 'question_id' not in data or not tools.is_int(data['question_id']) \
-                or int(data['question_id']) >= len(app.questions):
+                or int(data['question_id']) < 0 or \
+                int(data['question_id']) >= len(app.questions):
         return tools.gen_result_fail('Invalid question ID.')
     else:
-        app.current_question = int(request.form['question_id'])
+        app.current_question = int(data['question_id'])
         return tools.gen_result_success(message='Success.')
 
 @app.route('/api/current_question')
 @tools.api_response
 def api_current_question():
     return {'current_question': app.current_question}
+
+@app.route('/api/get_question', methods=['GET', 'POST'])
+@tools.api_response
+@tools.requires_args(required_args=['question_id'])
+def api_get_question(data):
+    if 'question_id' not in data or not tools.is_int(data['question_id']) \
+                or int(data['question_id']) < 0 or \
+                int(data['question_id']) >= len(app.questions):
+        return tools.gen_result_fail('Invalid question ID.')
+    return tools.gen_result_success(data=app.questions[int(data['question_id'])])
 
 def set_up_jinja():
     app.jinja_env.trim_blocks = True
