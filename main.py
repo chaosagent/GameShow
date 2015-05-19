@@ -17,17 +17,6 @@ def page_add():
 def page_control():
     # if request.method == 'GET':
     return render_template('control.html')
-    """elif request.method == 'POST':
-        # TODO: AJAX this
-        if 'question_id' not in request.form or not tools.is_int(request.form['question_id']) \
-                or int(request.form['question_id']) >= len(app.questions):
-            g.success = False
-            g.message = 'Invalid question id.'
-        else:
-            app.current_question = int(request.form['question_id'])
-            g.success = True
-            g.message = 'Success.'
-        return render_template('control.html')"""
 
 # TODO: Enforce a login
 @app.route('/api/set_current_question', methods=['POST', 'GET'])
