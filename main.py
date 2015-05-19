@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, g
 
 import tools
-import questions
+import config.questions as questions
 
 app = Flask(__name__)
 
@@ -65,5 +65,5 @@ if __name__ == '__main__':
     set_up_jinja()
     app.current_question = -1
     app.questions = questions.questions
-    app.config.from_pyfile('config.py')
+    app.config.from_pyfile('config/config.py')
     app.run()

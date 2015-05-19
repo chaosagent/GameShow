@@ -1,4 +1,4 @@
 .idea
 *.pyc
-config.py
-questions.py
+config/config.py
+config/questions.py
