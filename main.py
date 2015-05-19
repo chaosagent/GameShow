@@ -67,7 +67,7 @@ if __name__ == '__main__':
     app.questions = questions.questions
     app.config.from_pyfile('config/config.py')
     import config.config as config
-    if hasattr(config, 'HOST') and hasattr(config, 'PORT'):
-        app.run(host=config.HOST, port=config.PORT)
+    if hasattr(config, 'HOST') and tools.is_int(config.HOST) and hasattr(config, 'PORT') and tools.is_int(config.PORT):
+        app.run(host=int(config.HOST), port=int(config.PORT))
     else:
         app.run()
