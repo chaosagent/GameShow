@@ -65,4 +65,5 @@ if __name__ == '__main__':
     set_up_jinja()
     app.current_question = -1
     app.questions = questions.questions
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.config.from_pyfile('config.py')
+    app.run()
