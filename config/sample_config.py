@@ -1,2 +1,3 @@
 DEBUG = True
-SERVER_NAME = '0.0.0.0:5001'
+HOST = '0.0.0.0'
+PORT = '5001'
