@@ -38,6 +38,12 @@ def requires_args(required_args=()):
         return wrapper
     return decorator
 
+def disabled(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return gen_result_failure(message='API call disabled!')
+    return wrapper
+
 def gen_result_success(data=None, message=None):
     result = OrderedDict([
         ('success', True)])
@@ -47,7 +53,7 @@ def gen_result_success(data=None, message=None):
         result['data'] = data
     return result
 
-def gen_result_fail(message=None):
+def gen_result_failure(message=None):
     result = OrderedDict([
         ('success', False)])
     if message is not None:
@@ -56,4 +62,4 @@ def gen_result_fail(message=None):
 
 def gen_result_missing_param(params):
     missingparamsstring = ', '.join(params)
-    return gen_result_fail('Missing parameters: ' + missingparamsstring)
+    return gen_result_failure('Missing parameters: ' + missingparamsstring)

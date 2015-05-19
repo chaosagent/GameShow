@@ -4,32 +4,56 @@
     <meta charset="utf-8">
     <title>Jeopardy</title>
     <!-- for mobile -->
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
+    <!--meta name="viewport" content="width=device-width, initial-scale=1"/-->
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <style>
         html, body {
             background-color: #e454a5;
+            height: 100%;
+            width: 100%;
+            margin: 0;
         }
 
-        #grid_problems {
+        #box_heading {
+            height: 20%;
+        }
+
+        #grid_questions {
             width: 95%;
+            height: 80%;
+        }
+
+        #question_overlay {
+            visibility: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        #box_question {
+            background-color: white;
+            width: 80%;
+            height: 80%;
+            border-radius: 10px;
         }
 
         .heading {
-            font-size: 5vw;
+            font-size: 4em;
             text-align: center;
             font-family: Rockwell, "Courier Bold", Courier, Georgia, Times, "Times New Roman", serif;
             font-weight: 900;
             color: #252627;
-            margin-top: 3%
+            margin: 0;
         }
 
         .box {
             border-radius: 4px;
             text-align: center;
             padding: 2%;
-            padding-top: 2%;
-            padding-bottom: 2%;
             background-color: #f7add7;
             color: #CE0E7A;
             margin-bottom: 2%;
@@ -51,103 +75,178 @@
         td.box:hover {
             background-color: #ee7bbc;
         }
+
+        .center {
+            display: flex;
+            display: -webkit-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            -webkit-align-items: center;
+        }
     </style>
+    <script type="text/javascript">
+        var current_question = -1;
+        var current_question_info;
+        function show_current_question() {
+            $.get('{{ url_for('api_get_current_question') }}', function(data) {
+                var question_info = data['data'];
+                current_question_info = question_info;
+                $('#question_text').text(question_info['statement']);
+                for (var i = 0; i < question_info['choices'].length; i++) {
+                    $('#question_choices').append('<p class="answer_choice">' + String.fromCharCode(65 + i) + ') ' + question_info['choices'][i] + '</p>');
+                }
+                $('#question_overlay').css('visibility', 'visible');
+            })
+        }
+        function hide_question_overlay() {
+            $('#question_overlay').css('visibility', 'hidden');
+        }
+        function question_refresh_loop() {
+            $.get('{{ url_for('api_current_question') }}', function(data) {
+                var new_question = data['current_question'];
+                if (new_question == current_question) {
+                    return;
+                }
+                var old_question = current_question;
+                current_question = new_question;
+                if (old_question != -1) {
+                    // Transition question out
+                    hide_question_overlay();
+                }
+                if (new_question != -1) {
+                    // Transition question in
+                    show_current_question();
+                    answer_refresh_loop(new_question);
+                }
+            });
+            setTimeout(question_refresh_loop, 1000)
+        }
+
+        function answer_refresh_loop(question_id) {
+            if (current_question != question_id || current_question == -1) return;
+            $.get('{{ url_for('api_get_current_answer') }}', function(data) {
+                if (!data['success']) {
+                    $('#question_answer').text('');
+                    return;
+                }
+                var answer = data['data']['choice'] ;
+                $('#question_answer').text('Answer: ' + String.fromCharCode(65 + answer) + ') ' + current_question_info['choices'][answer]);
+            });
+            setTimeout(function() {answer_refresh_loop(question_id)}, 1000)
+        }
+
+        $(document).ready(function() {
+            question_refresh_loop();
+        });
+    </script>
 </head>
 <body>
-<p class="heading">GAME SHOW</p>
+<div id="box_heading" class="center">
+    <p class="heading">GAME SHOW</p>
+</div>
+<table id="grid_questions" align="center">
+    <tr>
+        <th class="box side-box">
+            CAT1
+        </th>
+        <th class="box">
+            CAT2
+        </th>
+        <th class="box">
+            CAT3
+        </th>
+        <th class="box">
+            CAT4
+        </th>
+        <th class="box">
+            CAT5
+        </th>
+    </tr>
 
-<div class="container">
-    <table id="grid_problems" align="center">
-        <tr>
-            <th class="box side-box">
-                CAT1
-            </th>
-            <th class="box">
-                CAT2
-            </th>
-            <th class="box">
-                CAT3
-            </th>
-            <th class="box">
-                CAT4
-            </th>
-            <th class="box">
-                CAT5
-            </th>
-        </tr>
+    <tr>
+        <td class="box side-box">
+            200
+        </td>
+        <td class="box">
+            200
+        </td>
+        <td class="box">
+            200
+        </td>
+        <td class="box">
+            200
+        </td>
+        <td class="box">
+            200
+        </td>
+    </tr>
 
-        <tr>
-            <td class="box side-box">
-                200
-            </td>
-            <td class="box">
-                200
-            </td>
-            <td class="box">
-                200
-            </td>
-            <td class="box">
-                200
-            </td>
-            <td class="box">
-                200
-            </td>
-        </tr>
+    <tr>
+        <td class="box side-box">
+            400
+        </td>
+        <td class="box">
+            400
+        </td>
+        <td class="box">
+            400
+        </td>
+        <td class="box">
+            400
+        </td>
+        <td class="box">
+            400
+        </td>
+    </tr>
 
-        <tr>
-            <td class="box side-box">
-                400
-            </td>
-            <td class="box">
-                400
-            </td>
-            <td class="box">
-                400
-            </td>
-            <td class="box">
-                400
-            </td>
-            <td class="box">
-                400
-            </td>
-        </tr>
+    <tr>
+        <td class="box side-box">
+            600
+        </td>
+        <td class="box">
+            600
+        </td>
+        <td class="box">
+            600
+        </td>
+        <td class="box">
+            600
+        </td>
+        <td class="box">
+            600
+        </td>
+    </tr>
 
-        <tr>
-            <td class="box side-box">
-                600
-            </td>
-            <td class="box">
-                600
-            </td>
-            <td class="box">
-                600
-            </td>
-            <td class="box">
-                600
-            </td>
-            <td class="box">
-                600
-            </td>
-        </tr>
+    <tr>
+        <td class="box side-box">
+            800
+        </td>
+        <td class="box">
+            800
+        </td>
+        <td class="box">
+            800
+        </td>
+        <td class="box">
+            800
+        </td>
+        <td class="box">
+            800
+        </td>
+    </tr>
+</table>
+<div id="question_overlay" class="center">
+    <div id="box_question">
+        <p class="heading">QUESTION</p>
 
-        <tr>
-            <td class="box side-box">
-                800
-            </td>
-            <td class="box">
-                800
-            </td>
-            <td class="box">
-                800
-            </td>
-            <td class="box">
-                800
-            </td>
-            <td class="box">
-                800
-            </td>
-        </tr>
-    </table>
+        <div id="question_info">
+            <p id="question_text">What is the value of 1+1?</p>
+
+            <div id="question_choices"></div>
+            <p id="question_answer"></p>
+        </div>
+    </div>
 </div>
 </body>
 </html>

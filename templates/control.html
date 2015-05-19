@@ -2,27 +2,37 @@
 <head>
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script type="text/javascript">
+        function clear_message(message_box) {
+            message_box.html('');
+            message_box.css('background-color', '');
+        }
+
+        function show_message(message_box, message, color) {
+            message_box.html(message);
+            message_box.css('background-color', color);
+            setTimeout(function () {
+                clear_message(message_box)
+            }, 1000);
+        }
+
+        function show_answer_api_call(show) {
+            var message_box = $('#message');
+            $.post('{{ url_for('api_set_show_answer') }}', {show: show}, function (data) {
+                if (data.success) {
+                    show_message(message_box, data.message, '#0f0');
+                } else {
+                    show_message(message_box, data.message, '#f00');
+                }
+            })
+        }
         $(document).ready(function () {
             $('.input').keyup(function (event) {
                 if (event.keyCode == 13) {
-                    $(this).siblings('.button_submit').click();
+                    $(this).siblings('.button_submit_show_question').click();
                 }
             });
 
-            function clear_message(message_box) {
-                message_box.html('');
-                message_box.css('background-color', '');
-            }
-
-            function show_message(message_box, message, color) {
-                message_box.html(message);
-                message_box.css('background-color', color);
-                setTimeout(function () {
-                    clear_message(message_box)
-                }, 1000);
-            }
-
-            $('.button_submit').click(function () {
+            $('.button_submit_show_question').click(function () {
                 var input = $(this).siblings('.input');
                 if (input.val() === '') {
                     return;
@@ -31,13 +41,20 @@
                     'question_id': input.val()
                 }, function (data) {
                     input.val('');
-                    message_box = $('#message');
+                    var message_box = $('#message');
                     if (data.success) {
                         show_message(message_box, data.message, '#0f0');
                     } else {
                         show_message(message_box, data.message, '#f00');
                     }
                 });
+            });
+
+            $('#button_show_answer').click(function() {
+                show_answer_api_call(true);
+            });
+            $('#button_hide_answer').click(function() {
+                show_answer_api_call(false);
             });
         });
     </script>
@@ -48,7 +65,9 @@
 <div>
     <label for="input_show_question_id">Number: </label>
     <input id="input_show_question_id" class="input" type="text" name="question_id"/>
-    <button id="button_submit_show_question" class="button_submit" type="button">Submit</button>
+    <button id="button_submit_show_question" class="button_submit_show_question" type="button">Submit</button>
+    <button id="button_show_answer" class="button_show_answer" type="button">Show answer</button>
+    <button id="button_hide_answer" class="button_hide_answer" type="button">Hide answer</button>
 </div>
 </body>
 </html>
