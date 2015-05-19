@@ -132,7 +132,7 @@
                     $('#question_answer').text('');
                     return;
                 }
-                var answer = data['data']['choice'] ;
+                var answer = data['data']['choice'];
                 $('#question_answer').text('Answer: ' + String.fromCharCode(65 + answer) + ') ' + current_question_info['choices'][answer]);
             });
             setTimeout(function() {answer_refresh_loop(question_id)}, 1000)
