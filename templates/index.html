@@ -20,11 +20,11 @@
 
         #grid_questions {
             width: 95%;
-            height: 80%;
+            max-height: 80%;
         }
 
         #question_overlay {
-            visibility: hidden;
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -34,15 +34,24 @@
             background-color: rgba(0, 0, 0, 0.5);
         }
 
+        #question_overlay_container {
+            height: 100%;
+        }
+
         #box_question {
             background-color: white;
-            width: 80%;
-            height: 80%;
+            width: 84%;
+            height: 84%;
             border-radius: 10px;
+            padding: 3%;
+        }
+
+        #question_info {
+            font-size: 5vh;
         }
 
         .heading {
-            font-size: 4em;
+            font-size: 7vh;
             text-align: center;
             font-family: Rockwell, "Courier Bold", Courier, Georgia, Times, "Times New Roman", serif;
             font-weight: 900;
@@ -79,6 +88,8 @@
         .center {
             display: flex;
             display: -webkit-flex;
+            flex-direction: column;
+            -webkit-flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
@@ -89,7 +100,7 @@
         var current_question = -1;
         var current_question_info;
         function show_current_question() {
-            $.get('{{ url_for('api_get_current_question') }}', function(data) {
+            $.get('{{ url_for('api_get_current_question') }}', function (data) {
                 if (!data['success']) return;
                 var question_info = data['data'];
                 current_question_info = question_info;
@@ -98,14 +109,14 @@
                 for (var i = 0; i < question_info['choices'].length; i++) {
                     $('#question_choices').append('<p class="answer_choice">' + String.fromCharCode(65 + i) + ') ' + question_info['choices'][i] + '</p>');
                 }
-                $('#question_overlay').css('visibility', 'visible');
+                $('#question_overlay').fadeIn();
             })
         }
         function hide_question_overlay() {
-            $('#question_overlay').css('visibility', 'hidden');
+            $('#question_overlay').fadeOut();
         }
         function question_refresh_loop() {
-            $.get('{{ url_for('api_current_question') }}', function(data) {
+            $.get('{{ url_for('api_current_question') }}', function (data) {
                 var new_question = data['current_question'];
                 if (new_question == current_question) {
                     return;
@@ -127,7 +138,7 @@
 
         function answer_refresh_loop(question_id) {
             if (current_question != question_id || current_question == -1) return;
-            $.get('{{ url_for('api_get_current_answer') }}', function(data) {
+            $.get('{{ url_for('api_get_current_answer') }}', function (data) {
                 if (!data['success']) {
                     $('#question_answer').text('');
                     return;
@@ -135,15 +146,17 @@
                 var answer = data['data']['choice'];
                 $('#question_answer').text('Answer: ' + String.fromCharCode(65 + answer) + ') ' + current_question_info['choices'][answer]);
             });
-            setTimeout(function() {answer_refresh_loop(question_id)}, 1000)
+            setTimeout(function () {
+                answer_refresh_loop(question_id)
+            }, 1000)
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             question_refresh_loop();
         });
     </script>
 </head>
-<body>
+<body class="center">
 <div id="box_heading" class="center">
     <p class="heading">GAME SHOW</p>
 </div>
@@ -238,15 +251,17 @@
         </td>
     </tr>
 </table>
-<div id="question_overlay" class="center">
-    <div id="box_question">
-        <p class="heading">QUESTION</p>
+<div id="question_overlay">
+    <div id="question_overlay_container" class="center">
+        <div id="box_question">
+            <p class="heading">QUESTION</p>
 
-        <div id="question_info">
-            <p id="question_text">What is the value of 1+1?</p>
+            <div id="question_info">
+                <p id="question_text">What is the value of 1+1?</p>
 
-            <div id="question_choices"></div>
-            <p id="question_answer"></p>
+                <div id="question_choices"></div>
+                <p id="question_answer"></p>
+            </div>
         </div>
     </div>
 </div>
